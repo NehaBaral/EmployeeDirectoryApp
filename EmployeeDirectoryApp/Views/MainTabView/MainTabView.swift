@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @AppStorage("onboardingRequired3") var onboardingRequired: Bool = true
     var body: some View {
         TabView {
             EmployeesView()
@@ -19,7 +20,11 @@ struct MainTabView: View {
                 .tabItem{
                     Label("Settings",systemImage: "gear")
                 }
-        }
+        }.sheet(isPresented: $onboardingRequired, onDismiss: {
+            onboardingRequired = false
+        }, content: {
+            OnBoardingView(onBoardingRequired: $onboardingRequired)
+        })
     }
 }
 

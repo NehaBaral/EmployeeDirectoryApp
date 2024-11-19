@@ -9,7 +9,7 @@ import SwiftUI
 
 struct EmployeeDetailView: View {
     let employee : EmployeeModel
-    @State private var shouldLoadImage = false
+    @State private var imageURL : URL?
     
     var body: some View {
         ScrollView{
@@ -77,37 +77,23 @@ struct EmployeeDetailView: View {
                     .foregroundColor(.orange)
                     .padding(.top,4)
                 
+                if let url = imageURL {
+                    AsyncImage(url: url) { image in
+                        image.resizable()
+                            .clipped()
+                    } placeholder: {
+                        ProgressView()
+                    }.frame(height: 250)
+                        .cornerRadius(20)
+                }
+                
                 Button(action: {
-                    shouldLoadImage = !shouldLoadImage
+                    imageURL = URL(string: employee.photo_url_large ?? "")
                 }){
                     Text("Tab to Load Image")
                     
                 }.padding(.top, 8)
                     .buttonStyle(.bordered)
-                
-                if shouldLoadImage {
-                    AsyncImage(url: URL(string: employee.photo_url_large ?? "")) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()
-                                .frame(height: 250)// Height for consistency
-                        case .success(let image):
-                            image.resizable()
-                                .frame(height: 250) // Height for consistency
-                                .clipped() // Ensure the image is clipped to its frame
-                                .cornerRadius(20)
-                        case .failure:
-                            Image(systemName: "photo")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(height: 250) // Height for consistency
-                                .clipped()
-                            
-                        @unknown default:
-                            EmptyView()
-                        }
-                    }
-                }
                 
                 Spacer()
             }.padding(.horizontal, 16)
