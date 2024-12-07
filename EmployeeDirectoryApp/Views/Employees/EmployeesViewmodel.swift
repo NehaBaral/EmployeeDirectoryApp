@@ -45,16 +45,15 @@ final class EmployeesViewmodel {
                        self.employees = fetchedEmployees
                        employeeCache.setObject(fetchedEmployees as AnyObject, forKey: "employees")
                    } catch let apiError as APIError {
-                      // print("Error fetching employees: \(error)")
-                       let message = handleApiError(apiError: apiError)
+                       handleApiError(apiError: apiError)
                    }catch{
-                       
+                       self.errorMessage = "Something went wrong."
                    }
                    isLoading = false
                }
     }
     
-    func handleApiError(apiError : APIError) -> String{
+    func handleApiError(apiError : APIError){
         let message: String
                switch apiError {
                case .invalidRequest(let details):
@@ -70,7 +69,6 @@ final class EmployeesViewmodel {
                }
                self.error = .apiError(apiError)
                self.errorMessage = message
-               return message
     }
     
     func filterSearchResult(){

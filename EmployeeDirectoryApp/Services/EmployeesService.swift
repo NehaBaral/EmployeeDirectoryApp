@@ -30,7 +30,6 @@ final class EmployeesService : EmployeesServiceType{
     
     func fetch<T>(type: T.Type, from urlString: String) async throws -> T? where T : Decodable {
         guard let url = URL(string: urlString) else{
-            print("InvalidUrl==")
             throw APIError.invalidRequest("Invalid find request path")
         }
         
