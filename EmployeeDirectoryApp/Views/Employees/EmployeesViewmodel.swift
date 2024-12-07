@@ -15,6 +15,7 @@ enum ViewModelError: Error {
 
 @Observable
 final class EmployeesViewmodel {
+    private let employeeCache = EmployeeCache()
     private let service : EmployeesServiceType
     private(set) var employees : [EmployeeModel] = []
     private(set) var isLoading : Bool = false
@@ -34,17 +35,23 @@ final class EmployeesViewmodel {
     
     @MainActor
     func fetchEmployees() async {
-        do {
-            isLoading = true
-            employees = try await service.fetchEmployees()
+        isLoading = true
+        if let cachedEmployees = employeeCache.getObject(forKey: "employees") as? [EmployeeModel] {
+                   self.employees = cachedEmployees
             isLoading = false
-        }catch let apiError as APIError {
-            print("Error : \(apiError)")
-            isLoading = false
-            handleApiError(apiError: apiError)
-        }catch {
-            
-        }
+               } else {
+                   do {
+                       let fetchedEmployees = try await service.fetchEmployees()
+                       self.employees = fetchedEmployees
+                       employeeCache.setObject(fetchedEmployees as AnyObject, forKey: "employees")
+                   } catch let apiError as APIError {
+                      // print("Error fetching employees: \(error)")
+                       let message = handleApiError(apiError: apiError)
+                   }catch{
+                       
+                   }
+                   isLoading = false
+               }
     }
     
     func handleApiError(apiError : APIError) -> String{
@@ -66,17 +73,17 @@ final class EmployeesViewmodel {
                return message
     }
     
-    func clearError() {
-            error = nil
-    }
-    
     func filterSearchResult(){
         searchResults = employees.filter({
             $0.full_name.localizedCaseInsensitiveContains(searchTerm)
         })
     }
     
-    func refreshEmployees(){
-       
+    func refreshEmployees() async{
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay
+        if let cachedEmployees = employeeCache.getObject(forKey: "employees") as? [EmployeeModel] {
+            self.employees = cachedEmployees
+            filterSearchResult()
+        }
     }
 }

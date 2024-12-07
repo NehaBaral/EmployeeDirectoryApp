@@ -19,11 +19,11 @@ struct EmployeeDetailView: View {
                         switch phase {
                         case .empty:
                             ProgressView()
-                                .frame(height: 250) // Height for consistency
+                                .frame(height: 250)
                         case .success(let image):
                             image.resizable()
-                                .frame(height: 250) // Height for consistency
-                                .clipped() // Ensure the image is clipped to its frame
+                                .frame(height: 250)
+                                .clipped()
                                 .cornerRadius(20)
                         case .failure:
                             Image(systemName: "photo")

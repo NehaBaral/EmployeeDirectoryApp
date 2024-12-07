@@ -41,15 +41,6 @@ struct EmployeesView: View {
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
                 .padding()
-                    
-                    Button("Retry") {
-                        viewModel.clearError()
-                        
-                    }
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
                 }
     }
     
@@ -99,7 +90,7 @@ struct EmployeesView: View {
             }
             .listStyle(.plain)
             .refreshable {
-                viewModel.refreshEmployees()
+                await viewModel.refreshEmployees()
             }
 
     }
